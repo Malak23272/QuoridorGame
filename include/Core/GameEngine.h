@@ -9,7 +9,6 @@ private:
     Player player1;
     Player player2;
     PlayerId currentPlayerTurn;
-    bool gameOver;
 
     // Internal helper to handle swapping turns
     void switchTurn();
@@ -31,3 +30,8 @@ public:
     bool isGameOver() const;
     PlayerId getWinner() const;
 };
+
+void GameEngine::switchTurn(){
+    if(currentPlayerTurn == PlayerId::PLAYER_1) currentPlayerTurn = PlayerId::PLAYER_2;
+    else currentPlayerTurn = PlayerId::PLAYER_1;
+}

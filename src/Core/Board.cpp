@@ -1,6 +1,6 @@
 #include<iostream>
 #include <vector>
-#include "C:\computer programming\QuoridorProject\include\Core\Board.h"
+#include "Board.h"
 using namespace std;
 
 Board::Board(){}
@@ -88,3 +88,40 @@ placedWalls.pop_back();
 
 return !find_goal_for_both;//if either  is blocked it will return true,if both not blocked it will return false
 }
+
+
+
+bool Board:: isValidWallPlacement(Wall wall) const{
+    //case1: wall out of bounds
+    if(wall.topLeft.x < 0  || wall.topLeft.y < 0) return false;
+    if(wall.topLeft.x >= 8 || wall.topLeft.y >= 8) return false;
+    
+    //case2: walls overlaps
+    for(int i = 0; i < placedWalls.size(); i++){
+        if(placedWalls[i].topLeft == wall.topLeft) return false;
+
+        if(wall.orientation == placedWalls[i].orientation){
+            if(wall.orientation == WallOrientation::HORIZONTAL && placedWalls[i].topLeft.x == wall.topLeft.x + 1 && placedWalls[i].topLeft.y == wall.topLeft.y) return false;
+            if(wall.orientation == WallOrientation::HORIZONTAL && placedWalls[i].topLeft.x == wall.topLeft.x - 1 && placedWalls[i].topLeft.y == wall.topLeft.y) return false;
+
+            if(wall.orientation == WallOrientation::VERTICAL && placedWalls[i].topLeft.y == wall.topLeft.y + 1 && placedWalls[i].topLeft.x == wall.topLeft.x) return false;
+            if(wall.orientation == WallOrientation::VERTICAL && placedWalls[i].topLeft.y == wall.topLeft.y - 1 && placedWalls[i].topLeft.x == wall.topLeft.x) return false;
+        }
+        
+        if(wall.topLeft.x == placedWalls[i].topLeft.x && wall.topLeft.y == placedWalls[i].topLeft.y) return false;
+    }
+    
+
+    return true;
+}
+
+
+void Board::placeWall(Wall wall){
+    placedWalls.push_back(wall);
+}
+
+
+const std::vector<Wall>& Board::getWalls() const{
+    return placedWalls;
+}
+

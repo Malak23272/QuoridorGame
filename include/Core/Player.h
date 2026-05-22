@@ -9,7 +9,7 @@ private:
     int goalRow; // The y-coordinate this player needs to reach to win
 
 public:
-    Player(PlayerId id, Position startPos, int goalRow);
+    Player(PlayerId id);
     
     // Getters
     PlayerId getId() const;
