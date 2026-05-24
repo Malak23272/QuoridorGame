@@ -1,6 +1,6 @@
 #include<iostream>
 #include <vector>
-#include "Board.h"
+#include "C:\computer programming\QuoridorProject\include\Core\Board.h"
 using namespace std;
 
 Board::Board(){}
@@ -124,4 +124,44 @@ void Board::placeWall(Wall wall){
 const std::vector<Wall>& Board::getWalls() const{
     return placedWalls;
 }
+
+int Board:: getShortestPath( Player& player){
+
+int distance [9][9];
+queue<Position>positions;
+
+for(int i=0;i<9;++i){
+    for(int j=0;j<9;++j){
+        distance[i][j]=-1;
+    }}
+//up down left right
+    int dx[4]={0,0,-1,1};
+    int dy[4]={-1,1,0,0};
+positions.push(player.getPosition());
+distance[player.getPosition().x][player.getPosition().y]=0;
+
+    while(!positions.empty()){
+Position pos=positions.front();
+positions.pop();
+if(pos.y==player.getGoalRow()){
+    return distance[pos.x][pos.y];
+}
+for(int i=0;i<4;++i){
+    Position p;
+    p.x=pos.x+dx[i];
+    p.y=pos.y+dy[i];
+
+if(p.x>=0&&p.x<9&&p.y<9&&p.y>=0){
+if(distance[p.x][p.y]==-1&&!isEdgeBlocked(pos,p)) {positions.push(p);
+
+distance[p.x][p.y]=distance[pos.x][pos.y]+1;//to increment the distance 
+}}
+
+
+}}
+return 999;//invalid or trigger for AI to not trying use this path 
+
+     }      
+          
+
 

@@ -2,7 +2,15 @@
 #include <vector>
 #include "Types.h"
 #include "Player.h"
-#include<queue>
+#include <queue>
+
+// Encapsulates a decision made by the AI
+struct Move {
+    bool isWallPlacement;
+    Position pawnMove;   // Used if isWallPlacement is false
+    Wall wallToPlace;    // Used if isWallPlacement is true
+    int evaluationScore; // Internal score used by the Minimax algorithm
+};
 
 class Board {
 private:
@@ -109,6 +117,11 @@ public:
 
     // Applies the wall to the board
     void placeWall(Wall wall);
+
+    //to get the shortest path for the player
+         int getShortestPath( Player& player);   
+         
+         
     
     // Getters for the UI (to draw them) and AI (to evaluate the board)
     const std::vector<Wall>& getWalls() const;
