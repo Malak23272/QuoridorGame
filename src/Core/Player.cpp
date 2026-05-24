@@ -13,6 +13,9 @@ Player::Player(PlayerId id): id(id), wallsRemaining(10){
     }
 }
 
+void Player::setID(PlayerId id){
+    this->id = id;
+}
 
 void Player::setPosition(Position newPos){
     currentPosition = newPos;

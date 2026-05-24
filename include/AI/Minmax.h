@@ -4,11 +4,15 @@
 #include "../Core/Player.h"
 #include <vector>
 
+class AIPlayer;
+
 class Minimax {
 private:
     int maxSearchDepth;
     PlayerId aiPlayerId;
     Move BestMove;
+
+    friend class AIPlayer ;
 
     // The heuristic function: This is the "secret sauce" of your AI.
     // It should calculate: (Opponent's shortest path to goal) - (AI's shortest path to goal)
@@ -24,7 +28,11 @@ private:
          void applymove(const Move &m,Board &b,Player &p);
 
 public:
+    Minimax();
     Minimax(int depth, PlayerId id):maxSearchDepth(depth),aiPlayerId(id){}
+
+    Move getBestMove(){return BestMove;}
+    Move calculateBestMove(Board currentBoard, Player currentPlayer, Player opponentPlayer);
 };
  void Minimax::applymove(const Move &m,Board&b,Player &p){
              if(m.isWallPlacement){
@@ -140,5 +148,7 @@ int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player 
     }
 
 
-
-                         
+Move Minimax::calculateBestMove(Board currentBoard, Player currentPlayer, Player opponentPlayer){
+    minimaxRecursive(currentBoard, currentPlayer, opponentPlayer, maxSearchDepth, -100000, 100000, 1);
+    return BestMove;
+}

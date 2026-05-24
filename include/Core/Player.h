@@ -9,6 +9,7 @@ private:
     int goalRow; // The y-coordinate this player needs to reach to win
 
 public:
+    Player();
     Player(PlayerId id);
     
     // Getters
@@ -19,6 +20,7 @@ public:
 
     // State modifiers
     void setPosition(Position newPos);
+    void setID(PlayerId id);
     bool useWall(); // Decrements wall count, returns false if out of walls
     bool hasWon() const;
 };

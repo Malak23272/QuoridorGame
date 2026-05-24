@@ -7,10 +7,12 @@
 enum class AIDifficulty {
     EASY = 1,   // Looks 1 move ahead (mostly greedy)
     MEDIUM = 2, // Looks 2 moves ahead
-    HARD = 3    // Looks 3-4 moves ahead (Requires highly optimized code!)
+    HARD = 4    // Looks 3-4 moves ahead (Requires highly optimized code!)
 };
 
 class AIPlayer {
+    class Minimax minmax;
+
 private:
     Minimax brain;
     PlayerId id;

@@ -15,17 +15,19 @@ bool GameEngine::movePawn(Position newPos){
 
 bool GameEngine::placeWall(Wall wall){
     if(currentPlayerTurn == PlayerId::PLAYER_1){
-        if(player1.useWall()){
+        if(player1.getWallsRemaining()){
             if(board.isValidWallPlacement(wall) && !board.doesWallBlockPath(wall, player1, player2)){
             board.placeWall(wall);
+            player1.useWall();
             return true;
             }
         }
     }
     else{
-        if(player2.useWall()){
+        if(player2.getWallsRemaining()){
             if(board.isValidWallPlacement(wall) && !board.doesWallBlockPath(wall, player1, player2)){
             board.placeWall(wall);
+            player2.useWall();
             return true;
             }
         }
@@ -44,7 +46,7 @@ bool GameEngine::isGameOver() const{
 
 
 PlayerId GameEngine::getWinner() const{
-    if(isGameOver){
+    if(isGameOver()){
         if(player1.hasWon()) return PlayerId::PLAYER_1;
         else return PlayerId::PLAYER_2;
     }

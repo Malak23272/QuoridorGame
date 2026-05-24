@@ -1,6 +1,6 @@
 #include<iostream>
 #include <vector>
-#include "C:\computer programming\QuoridorProject\include\Core\Board.h"
+#include "Board.h"
 using namespace std;
 
 Board::Board(){}

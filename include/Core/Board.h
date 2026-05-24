@@ -57,7 +57,7 @@ bool hasPath_to_Goal(Player player){
 bool visited[9][9]={false};//all the indexes are false
 
 //create queue of the positions to check about the path
-queue<Position>positions;
+std::queue<Position>positions;
 
 //in each current position it will need to check the 4 neighbors (up ,down,left,right)
 //so we have 2 options handle each case separetly or make 4 mini arrays for the change in x and change in y
