@@ -33,47 +33,31 @@ bool Board::isValidPawnMove(Position current, Position target, Position opponent
     //if they are next to each other but they have wall it can't move 2 steps 
     if(isEdgeBlocked(current,opponentPos)) return false;
 
-    //WE NEED HERE TO DISCUSS THE MOVEMENT JUMP
-    //BRING THE POSITION BEHIND OPPONENT
+    // The cell on the far side of the opponent (used for jumping over)
     Position behind;
-    behind.x=opponentPos.x+std::abs(opponentPos.x-current.x);//get behind in any case left ,right,up,down
-    behind.y=opponentPos.y+std::abs(opponentPos.y-current.y);//the same here as well
+    behind.x = opponentPos.x + (opponentPos.x - current.x);
+    behind.y = opponentPos.y + (opponentPos.y - current.y);
 
-    //what if the behind position is out of bounds?
-    bool behind_out_of_bounds=(behind.x>=9||behind.y>=9||behind.y<0||behind.x<0)?1:0;
+    bool behind_out_of_bounds = (behind.x>=9||behind.y>=9||behind.y<0||behind.x<0);
+    bool invalid_jump = behind_out_of_bounds || isEdgeBlocked(opponentPos, behind);
 
-    //what if it's wall blocked
-    bool invalid_jump=(behind_out_of_bounds||isEdgeBlocked(opponentPos,behind))?1:0;
-    
-    //so here check the target =behind
-    if(target==behind){
-     //check behind case through invalid jump
-     if(invalid_jump) return false;//can't jump here
-     return true; }
-     
-     //check the diagonal movement
-     //actually this movement is changing x and y together unlike any other one
-     if(step_x==1&&step_y==1){
-     
-        if(!invalid_jump){
-            return false;
-            //why because if it's valid jump you can't move diagonally 
+    // Jump over opponent (2 steps in the same direction)
+    if(target == behind){
+        if(invalid_jump) return false;
+        return true;
+    }
+
+    // Diagonal escape (only allowed when the jump is blocked)
+    if(step_x == 1 && step_y == 1){
+        if(!invalid_jump) return false;
+        int diag_dist = std::abs(target.x - opponentPos.x) + std::abs(target.y - opponentPos.y);
+        if(diag_dist == 1) {
+            return !isEdgeBlocked(opponentPos, target);
         }
+    }
 
-        //check that the target moving diagonally forwards not backwards
-        int check_movement_of_diagonal=std::abs(target.x-opponentPos.x)+std::abs(target.y-opponentPos.y);
-
-        //if this movement not =1 
-        //that means it tries to move diagonally but backwards
-        //if it =1 that means it moves diagonally forwards
-        //if it's =1 yes okay but i need to check the wall blocking again
-        if(check_movement_of_diagonal==1) {
-            return !isEdgeBlocked(opponentPos,target);//if it's edge block can't move in this diagonal
-        } }
-
-        //else it's valid move so return true
-        return true;}
-
+    return false;
+}
 
 bool Board:: doesWallBlockPath(Wall newWall, const Player& p1, const Player& p2) {
 //add the wall in the placed walls vector

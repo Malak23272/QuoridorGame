@@ -5,24 +5,33 @@
 // Translates raw screen pixels (e.g., 800x600) into game grid coordinates (0-8)
 class Input {
 private:
-    int windowWidth;
-    int windowHeight;
-    int boardPixelSize; // Total size of the graphical board
-    int cellSize;       // Pixel size of a single 9x9 square
-    int wallGapSize;    // Pixel size of the gap between squares where walls go
+    int windowWidth = 0;
+    int windowHeight = 0;
+    int boardPixelSize = 0; // Total pixel size of the drawing board
+    int cellSize = 0;       // Pixel size of a single cell
+    int wallGapSize = 0;    // Pixel size of the gap between cells where walls go
+    int margin = 0;         // Offset from widget edge to board start
+
+    void recalculate();
 
 public:
-    Input(int width, int height, int boardSize);
+    Input() = default;
+    Input(int width, int height, int /*boardSize*/);
 
-    // Determines if a mouse click was inside a square (pawn move)
+    // Reinitialize for new widget dimensions (call on resize)
+    void resize(int newWidth, int newHeight);
+
+    // Click classification
     bool isPawnMoveClick(int mouseX, int mouseY) const;
-    
-    // Determines if a mouse click was in the gap between squares (wall placement)
     bool isWallPlacementClick(int mouseX, int mouseY) const;
 
-    // Translates the pixel click into a grid Position
+    // Coordinate translation
     Position getGridPositionFromMouse(int mouseX, int mouseY) const;
-    
-    // Translates the pixel click into a Wall orientation and start position
     Wall getWallFromMouse(int mouseX, int mouseY) const;
+
+    // Getters for rendering
+    int getCellSize() const { return cellSize; }
+    int getGapSize() const { return wallGapSize; }
+    int getMargin() const { return margin; }
+    int getBoardPixelSize() const { return boardPixelSize; }
 };

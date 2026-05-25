@@ -23,4 +23,5 @@ public:
     void setID(PlayerId id);
     bool useWall(); // Decrements wall count, returns false if out of walls
     bool hasWon() const;
+    void loadPlayerState(Position pos, int walls);
 };

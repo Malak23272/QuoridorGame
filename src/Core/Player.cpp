@@ -1,5 +1,11 @@
 #include "Player.h"
 
+Player::Player() : id(PlayerId::PLAYER_1), wallsRemaining(10) {
+    currentPosition.x = 4;
+    currentPosition.y = 8;
+    goalRow = 0;
+}
+
 Player::Player(PlayerId id): id(id), wallsRemaining(10){
     if(id == PlayerId::PLAYER_1){
         currentPosition.x = 4;
@@ -45,4 +51,9 @@ int Player::getWallsRemaining() const{
 
 int Player::getGoalRow() const{
     return goalRow;
+}
+
+void Player::loadPlayerState(Position pos, int walls) {
+    currentPosition = pos;
+    wallsRemaining = walls;
 }

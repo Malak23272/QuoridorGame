@@ -1,0 +1,35 @@
+Build outputs
+build*/
+!build.ps1
+
+Compiled binaries
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.so
+
+Qt moc autogen
+mocs_compilation.cpp
+*_autogen/
+
+IDE / editor
+.vscode/
+.qt/
+*.user
+*.suo
+
+CMake cache
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+Temp files
+*.d
+*.log
+*.tmp
+Thumbs.db
+.DS_Store

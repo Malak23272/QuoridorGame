@@ -3,6 +3,7 @@
 #include "../Core/Board.h"
 #include "../Core/Player.h"
 #include <vector>
+#include <algorithm>
 
 class AIPlayer;
 
@@ -34,7 +35,7 @@ public:
     Move getBestMove(){return BestMove;}
     Move calculateBestMove(Board currentBoard, Player currentPlayer, Player opponentPlayer);
 };
- void Minimax::applymove(const Move &m,Board&b,Player &p){
+ inline void Minimax::applymove(const Move &m,Board&b,Player &p){
              if(m.isWallPlacement){
                    b.placeWall(m.wallToPlace);
                    p.useWall();
@@ -47,11 +48,15 @@ public:
                 } }
             
 
-int Minimax::evaluateBoardState( Board& board,  Player& aiPlayer,  Player& opponent) const{
-    return board.getShortestPath(opponent)-board.getShortestPath(aiPlayer);}
+inline int Minimax::evaluateBoardState( Board& board,  Player& aiPlayer,  Player& opponent) const{
+    // Base score: opponent path length minus AI path length (higher = better for AI)
+    int score = board.getShortestPath(opponent)-board.getShortestPath(aiPlayer);
+    // Small bonus for having more walls remaining (strategic flexibility)
+    score += (aiPlayer.getWallsRemaining() - opponent.getWallsRemaining()) * 2;
+    return score;}
     //////////////////////////
 
-int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, 
+inline int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, 
                          int depth, int alpha, int beta, bool isMaximizing){
                             if(depth==0) return evaluateBoardState(currentBoard,currentPlayer,opponentPlayer);
                             Player p;
@@ -105,28 +110,35 @@ int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player 
                             if(alpha>=beta){
                                 break;
                             }
-                                }
+                                
+                        }
                             return min;
                             }}
 
 
-    std::vector<Move> Minimax:: generateAllLegalMoves(Board& board, const Player& activePlayer,const Player &opponnentPlayer) const{
+    inline std::vector<Move> Minimax:: generateAllLegalMoves(Board& board, const Player& activePlayer,const Player &opponnentPlayer) const{
        std::vector<Move>legalmoves;
-       //pawns moves
-    for(int dx=-2;dx<=2;++dx){
-        for(int dy=-2;dy<=2;++dy){
-        Position p;
-        p.x=activePlayer.getPosition().x+dx;
-        p.y=activePlayer.getPosition().y+dy;
-        if(board.isValidPawnMove(activePlayer.getPosition(),p,opponnentPlayer.getPosition())){
-            legalmoves.push_back({0,p});
-        }
+       //pawns moves — iterate dy in goal-direction order (forward first)
+    int goalRow = activePlayer.getGoalRow();
+    int fwd = (goalRow == 0) ? -1 : 1;
+    for(int dy : {fwd, 2*fwd, 0, -fwd, -2*fwd}) {
+        for(int dx=-2;dx<=2;++dx){
+            Position p;
+            p.x=activePlayer.getPosition().x+dx;
+            p.y=activePlayer.getPosition().y+dy;
+            if(board.isValidPawnMove(activePlayer.getPosition(),p,opponnentPlayer.getPosition())){
+                legalmoves.push_back({0,p});
+            }
         }
     }
-    //walls moves
+    //walls moves — restrict to region between both players for performance + strategic relevance
     if(activePlayer.getWallsRemaining()>0){
-    for(int x=0;x<=7;++x){
-      for(int y=0;y<=7;++y){
+    int px=activePlayer.getPosition().x, py=activePlayer.getPosition().y;
+    int ox=opponnentPlayer.getPosition().x, oy=opponnentPlayer.getPosition().y;
+    int x0=std::max(0,std::min(px,ox)-2), x1=std::min(7,std::max(px,ox)+2);
+    int y0=std::max(0,std::min(py,oy)-2), y1=std::min(7,std::max(py,oy)+2);
+    for(int x=x0;x<=x1;++x){
+      for(int y=y0;y<=y1;++y){
 
     Wall hwall;
     hwall.orientation=WallOrientation::HORIZONTAL;
@@ -148,7 +160,59 @@ int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player 
     }
 
 
-Move Minimax::calculateBestMove(Board currentBoard, Player currentPlayer, Player opponentPlayer){
+inline Move Minimax::calculateBestMove(Board currentBoard, Player currentPlayer, Player opponentPlayer){
+    // Initialize to invalid state; updated by search if any move found
+    BestMove.isWallPlacement = false;
+    BestMove.pawnMove = currentPlayer.getPosition();
+    BestMove.wallToPlace = {};
+    BestMove.evaluationScore = -100000;
+
+    // First find ALL root-level legal moves (the search will refine)
+    std::vector<Move> rootMoves = generateAllLegalMoves(currentBoard, currentPlayer, opponentPlayer);
+
+
+    if (rootMoves.empty()) {
+        // No legal moves at all — return a safe forward step
+        Position p = currentPlayer.getPosition();
+        int goalRow = currentPlayer.getGoalRow();
+        int dy = (goalRow == 0) ? -1 : 1; // toward goal
+        Position fwd{p.x, p.y + dy};
+        if (currentBoard.isValidPawnMove(p, fwd, opponentPlayer.getPosition())) {
+            BestMove = {false, fwd, {}, -100000};
+        } else {
+            // Try sides
+            for (int dx : {-1, 1}) {
+                Position side{p.x + dx, p.y};
+                if (currentBoard.isValidPawnMove(p, side, opponentPlayer.getPosition())) {
+                    BestMove = {false, side, {}, -100000};
+                    break;
+                }
+            }
+        }
+        return BestMove;
+    }
+
     minimaxRecursive(currentBoard, currentPlayer, opponentPlayer, maxSearchDepth, -100000, 100000, 1);
+
+    // Safety: ensure BestMove is actually in rootMoves (defensive against edge cases)
+    bool valid = false;
+    for (const auto& rm : rootMoves) {
+        if (rm.isWallPlacement == BestMove.isWallPlacement) {
+            if (BestMove.isWallPlacement) {
+                if (rm.wallToPlace.topLeft.x == BestMove.wallToPlace.topLeft.x &&
+                    rm.wallToPlace.topLeft.y == BestMove.wallToPlace.topLeft.y &&
+                    rm.wallToPlace.orientation == BestMove.wallToPlace.orientation) {
+                    valid = true; break;
+                }
+            } else {
+                if (rm.pawnMove.x == BestMove.pawnMove.x && rm.pawnMove.y == BestMove.pawnMove.y) {
+                    valid = true; break;
+                }
+            }
+        }
+    }
+    if (!valid) {
+        BestMove = rootMoves[0];
+    }
     return BestMove;
 }

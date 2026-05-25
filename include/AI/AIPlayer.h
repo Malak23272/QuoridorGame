@@ -11,9 +11,7 @@ enum class AIDifficulty {
 };
 
 class AIPlayer {
-    class Minimax minmax;
-
-private:
+  private:
     Minimax brain;
     PlayerId id;
 

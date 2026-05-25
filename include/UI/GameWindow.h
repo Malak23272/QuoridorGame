@@ -1,39 +1,64 @@
-// UI/GameWindow.h
 #pragma once
+#include <QMainWindow>
+#include <QLabel>
+#include <QComboBox>
+#include <QFutureWatcher>
+#include <memory>
 #include "../Core/GameEngine.h"
-#include "Input.h"
-#include <string>
+#include "../Core/Types.h"
+#include "../Core/Player.h"
+#include "../Core/Board.h"
+#include "../AI/AIPlayer.h"
+#include "../AI/Minmax.h"
+#include "GameBoardWidget.h"
 
-// Note: If you use SFML, you would include <SFML/Graphics.hpp> here 
-// and use sf::RenderWindow. I am keeping it framework-independent for now.
-
-class GameWindow {
-private:
-    int width;
-    int height;
-    Input inputTranslator;
-    
-    // Framework-specific window pointer goes here (e.g., sf::RenderWindow* window)
-
-    // Helper functions to keep rendering clean
-    void drawGrid();
-    void drawWalls(const std::vector<Wall>& walls);
-    void drawPawns(const Player& p1, const Player& p2);
-    void drawHUD(const GameEngine& engine); // Shows whose turn it is & wall counts
-    void highlightValidMoves(const std::vector<Position>& validMoves); 
-
+class GameWindow : public QMainWindow {
+    Q_OBJECT
 public:
-    GameWindow(int winWidth, int winHeight, const std::string& title);
-    ~GameWindow(); 
+    explicit GameWindow(QWidget* parent = nullptr);
+    ~GameWindow() override = default;
 
-    bool isOpen() const;
-    
-    // Captures mouse clicks and tells the GameEngine what the user wants to do
-    void handleEvents(GameEngine& engine); 
-    
-    // Clears the screen, calls all draw helpers, and displays the frame
-    void render(const GameEngine& engine); 
-    
-    // Triggers the end-game screen
-    void displayWinner(PlayerId winner);
+private slots:
+    void onPawnMoveClicked(Position pos);
+    void onWallPlaceClicked(Wall wall);
+    void onInvalidAction(const QString& msg);
+    void onGameModeChanged(int index);
+    void onDifficultyChanged(int index);
+    void resetGame();
+    void saveGame();
+    void loadGame();
+
+private:
+    // --- engine & AI ---
+    GameEngine engine;
+    std::unique_ptr<AIPlayer> aiPlayer;
+    PlayerId aiPlayerId = PlayerId::PLAYER_2;
+    AIDifficulty currentDifficulty = AIDifficulty::EASY;
+    bool isAIMode = false;
+    bool aiRunning = false;
+
+    // --- widgets ---
+    GameBoardWidget* boardWidget = nullptr;
+    QLabel* turnLabel       = nullptr;
+    QLabel* p1WallsLabel    = nullptr;
+    QLabel* p2WallsLabel    = nullptr;
+    QLabel* notificationLabel = nullptr;
+    QComboBox* gameModeCombo   = nullptr;
+    QComboBox* difficultyCombo = nullptr;
+
+    // --- async AI ---
+    QFutureWatcher<Move> aiWatcher;
+
+    // --- helpers ---
+    void setupMenuBar();
+    void setupUI();
+    void connectSignals();
+    void afterMove();
+    void triggerAITurn();
+    void onAIFinished();
+    void refreshHUD();
+    void showWinnerPopup(PlayerId winner);
+    void setNotification(const QString& msg, bool isError = true);
+    void clearNotificationTimed();
+    QString playerName(PlayerId id) const;
 };

@@ -2,6 +2,8 @@
 #include "Board.h"
 #include "Player.h"
 #include "Types.h"
+#include <fstream>
+#include <string>
 
 class GameEngine {
 private:
@@ -9,6 +11,7 @@ private:
     Player player1;
     Player player2;
     PlayerId currentPlayerTurn;
+    mutable std::string lastError;
 
     // Internal helper to handle swapping turns
     void switchTurn();
@@ -29,9 +32,16 @@ public:
     PlayerId getCurrentTurn() const;
     bool isGameOver() const;
     PlayerId getWinner() const;
+
+    // Returns the reason the last movePawn/placeWall call failed
+    std::string getLastError() const { return lastError; }
+
+    //Saving/Loading Feature
+    bool saveGame(const std::string& filename);
+    bool loadGame(const std::string& filename);
 };
 
-void GameEngine::switchTurn(){
+inline void GameEngine::switchTurn(){
     if(currentPlayerTurn == PlayerId::PLAYER_1) currentPlayerTurn = PlayerId::PLAYER_2;
     else currentPlayerTurn = PlayerId::PLAYER_1;
 }
