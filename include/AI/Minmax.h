@@ -21,12 +21,10 @@ private:
     int evaluateBoardState(Board& board, Player& aiPlayer, Player& opponent) const;
 
     // Generates all legal pawn moves AND valid wall placements for a given state
-    std::vector<Move> generateAllLegalMoves(Board& board, const Player& activePlayer,
-                                            const Player& opponnentPlayer) const;
+    std::vector<Move> generateAllLegalMoves(Board& board, const Player& activePlayer, const Player& opponnentPlayer) const;
 
     // The recursive alpha-beta pruning function
-    int minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, int depth, int alpha,
-                         int beta, bool isMaximizing);
+    int minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, int depth, int alpha, int beta, bool isMaximizing);
     // function to help creating a move and test it
     void applymove(const Move& m, Board& b, Player& p);
 
@@ -55,10 +53,8 @@ inline int Minimax::evaluateBoardState(Board& board, Player& aiPlayer, Player& o
     score += (aiPlayer.getWallsRemaining() - opponent.getWallsRemaining()) * 2;
     return score;
 }
-//////////////////////////
 
-inline int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, int depth,
-                                      int alpha, int beta, bool isMaximizing) {
+inline int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, Player opponentPlayer, int depth, int alpha, int beta, bool isMaximizing) {
     if (depth == 0) return evaluateBoardState(currentBoard, currentPlayer, opponentPlayer);
     Player p;
     std::vector<Move> moves;
@@ -117,8 +113,7 @@ inline int Minimax ::minimaxRecursive(Board currentBoard, Player currentPlayer, 
     }
 }
 
-inline std::vector<Move> Minimax::generateAllLegalMoves(Board& board, const Player& activePlayer,
-                                                        const Player& opponnentPlayer) const {
+inline std::vector<Move> Minimax::generateAllLegalMoves(Board& board, const Player& activePlayer, const Player& opponnentPlayer) const {
     std::vector<Move> legalmoves;
     // pawns moves — iterate dy in goal-direction order (forward first)
     int goalRow = activePlayer.getGoalRow();
