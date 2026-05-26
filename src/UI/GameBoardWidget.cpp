@@ -1,26 +1,26 @@
 #include "UI/GameBoardWidget.h"
-#include <QPainter>
+
 #include <QMouseEvent>
+#include <QPainter>
 #include <algorithm>
 #include <optional>
 
-GameBoardWidget::GameBoardWidget(GameEngine* engine, QWidget* parent)
-    : QWidget(parent), engine(engine) {
+GameBoardWidget::GameBoardWidget(GameEngine* engine, QWidget* parent) : QWidget(parent), engine(engine) {
     setMouseTracking(true);
     setMinimumSize(400, 400);
 }
 
 // ---------- drawing ----------
 
-static const QColor BOARD_BG  = QColor("#f5e6c8");
+static const QColor BOARD_BG = QColor("#f5e6c8");
 static const QColor CELL_FILL = QColor("#f0d9b5");
-static const QColor CELL_BDR  = QColor("#8b7355");
-static const QColor WALL_CLR  = QColor("#5c3a1e");
-static const QColor WALL_VALID   = QColor( 60, 200, 60, 160);
-static const QColor WALL_INVALID = QColor(220,  40, 40, 160);
-static const QColor P1_CLR    = QColor("#4169E1");
-static const QColor P2_CLR    = QColor("#DC143C");
-static const QColor HIGHLIGHT = QColor( 60, 200, 60, 120);
+static const QColor CELL_BDR = QColor("#8b7355");
+static const QColor WALL_CLR = QColor("#5c3a1e");
+static const QColor WALL_VALID = QColor(60, 200, 60, 160);
+static const QColor WALL_INVALID = QColor(220, 40, 40, 160);
+static const QColor P1_CLR = QColor("#4169E1");
+static const QColor P2_CLR = QColor("#DC143C");
+static const QColor HIGHLIGHT = QColor(60, 200, 60, 120);
 
 void GameBoardWidget::paintEvent(QPaintEvent* /*event*/) {
     QPainter p(this);
@@ -30,7 +30,7 @@ void GameBoardWidget::paintEvent(QPaintEvent* /*event*/) {
     p.fillRect(rect(), BOARD_BG);
 
     int cellSize = inputTranslator.getCellSize();
-    int gapSize  = inputTranslator.getGapSize();
+    int gapSize = inputTranslator.getGapSize();
     if (cellSize < 1 || gapSize < 1) return;
 
     drawGrid(p);
@@ -42,9 +42,9 @@ void GameBoardWidget::paintEvent(QPaintEvent* /*event*/) {
 
 void GameBoardWidget::drawGrid(QPainter& p) {
     int cellSize = inputTranslator.getCellSize();
-    int gapSize  = inputTranslator.getGapSize();
-    int margin   = inputTranslator.getMargin();
-    int step     = cellSize + gapSize;
+    int gapSize = inputTranslator.getGapSize();
+    int margin = inputTranslator.getMargin();
+    int step = cellSize + gapSize;
 
     // Board base rectangle
     int boardPx = 9 * cellSize + 8 * gapSize;
@@ -72,9 +72,9 @@ void GameBoardWidget::drawWalls(QPainter& p, const std::vector<Wall>& walls) {
     if (walls.empty()) return;
 
     int cellSize = inputTranslator.getCellSize();
-    int gapSize  = inputTranslator.getGapSize();
-    int margin   = inputTranslator.getMargin();
-    int step     = cellSize + gapSize;
+    int gapSize = inputTranslator.getGapSize();
+    int margin = inputTranslator.getMargin();
+    int step = cellSize + gapSize;
 
     p.setPen(QPen(WALL_CLR.darker(120), 1));
     p.setBrush(WALL_CLR);
@@ -96,11 +96,10 @@ void GameBoardWidget::drawWalls(QPainter& p, const std::vector<Wall>& walls) {
 
 void GameBoardWidget::drawPawns(QPainter& p) {
     int cellSize = inputTranslator.getCellSize();
-    int radius   = static_cast<int>(cellSize * 0.38);
+    int radius = static_cast<int>(cellSize * 0.38);
 
     // Player 1
-    QPointF c1 = cellCenter(engine->getPlayer1().getPosition().x,
-                            engine->getPlayer1().getPosition().y);
+    QPointF c1 = cellCenter(engine->getPlayer1().getPosition().x, engine->getPlayer1().getPosition().y);
     p.setPen(QPen(Qt::black, 2));
     p.setBrush(P1_CLR);
     p.drawEllipse(c1, radius, radius);
@@ -111,28 +110,24 @@ void GameBoardWidget::drawPawns(QPainter& p) {
     f.setPixelSize(radius);
     f.setBold(true);
     p.setFont(f);
-    p.drawText(QRectF(c1.x() - radius, c1.y() - radius, radius * 2, radius * 2),
-               Qt::AlignCenter, QString("1"));
+    p.drawText(QRectF(c1.x() - radius, c1.y() - radius, radius * 2, radius * 2), Qt::AlignCenter, QString("1"));
 
     // Player 2
-    QPointF c2 = cellCenter(engine->getPlayer2().getPosition().x,
-                            engine->getPlayer2().getPosition().y);
+    QPointF c2 = cellCenter(engine->getPlayer2().getPosition().x, engine->getPlayer2().getPosition().y);
     p.setPen(QPen(Qt::black, 2));
     p.setBrush(P2_CLR);
     p.drawEllipse(c2, radius, radius);
 
     p.setPen(Qt::white);
-    p.drawText(QRectF(c2.x() - radius, c2.y() - radius, radius * 2, radius * 2),
-               Qt::AlignCenter, QString("2"));
+    p.drawText(QRectF(c2.x() - radius, c2.y() - radius, radius * 2, radius * 2), Qt::AlignCenter, QString("2"));
 }
 
 // ---------- coordinate helpers ----------
 
 QRectF GameBoardWidget::cellRect(int gx, int gy) const {
     int step = inputTranslator.getCellSize() + inputTranslator.getGapSize();
-    int m    = inputTranslator.getMargin();
-    return QRectF(m + gx * step, m + gy * step,
-                  inputTranslator.getCellSize(), inputTranslator.getCellSize());
+    int m = inputTranslator.getMargin();
+    return QRectF(m + gx * step, m + gy * step, inputTranslator.getCellSize(), inputTranslator.getCellSize());
 }
 
 QPointF GameBoardWidget::cellCenter(int gx, int gy) const {
@@ -146,9 +141,9 @@ void GameBoardWidget::drawHoverWall(QPainter& p) {
     if (!hoverWall.has_value()) return;
     const HoverWall& hw = hoverWall.value();
     int cellSize = inputTranslator.getCellSize();
-    int gapSize  = inputTranslator.getGapSize();
-    int margin   = inputTranslator.getMargin();
-    int step     = cellSize + gapSize;
+    int gapSize = inputTranslator.getGapSize();
+    int margin = inputTranslator.getMargin();
+    int step = cellSize + gapSize;
 
     p.setPen(QPen(Qt::black, 2));
     p.setBrush(hw.isValid ? WALL_VALID : WALL_INVALID);
@@ -175,8 +170,8 @@ bool GameBoardWidget::checkWallValidity(const Wall& w) const {
     }
     // doesWallBlockPath is non-const, so work on a board copy
     Board tempBoard = engine->getBoard();
-    return tempBoard.isValidWallPlacement(w)
-        && !tempBoard.doesWallBlockPath(w, engine->getPlayer1(), engine->getPlayer2());
+    return tempBoard.isValidWallPlacement(w) &&
+           !tempBoard.doesWallBlockPath(w, engine->getPlayer1(), engine->getPlayer2());
 }
 
 // ---------- mouse ----------
@@ -211,8 +206,8 @@ void GameBoardWidget::mouseMoveEvent(QMouseEvent* event) {
     if (inputTranslator.isWallPlacementClick(mx, my)) {
         Wall w = inputTranslator.getWallFromMouse(mx, my);
         bool valid = checkWallValidity(w);
-        if (!hoverWall.has_value() || hoverWall.value().wall.topLeft != w.topLeft
-            || hoverWall.value().wall.orientation != w.orientation) {
+        if (!hoverWall.has_value() || hoverWall.value().wall.topLeft != w.topLeft ||
+            hoverWall.value().wall.orientation != w.orientation) {
             hoverWall = HoverWall{w, valid};
             update();
         }
@@ -235,12 +230,10 @@ void GameBoardWidget::resizeEvent(QResizeEvent* /*event*/) {
 void GameBoardWidget::refreshValidMoves() {
     validHighlights.clear();
 
-    const Player& current = (engine->getCurrentTurn() == PlayerId::PLAYER_1)
-                                ? engine->getPlayer1()
-                                : engine->getPlayer2();
-    const Player& opponent = (engine->getCurrentTurn() == PlayerId::PLAYER_1)
-                                 ? engine->getPlayer2()
-                                 : engine->getPlayer1();
+    const Player& current =
+        (engine->getCurrentTurn() == PlayerId::PLAYER_1) ? engine->getPlayer1() : engine->getPlayer2();
+    const Player& opponent =
+        (engine->getCurrentTurn() == PlayerId::PLAYER_1) ? engine->getPlayer2() : engine->getPlayer1();
 
     Position pos = current.getPosition();
     Position opp = opponent.getPosition();

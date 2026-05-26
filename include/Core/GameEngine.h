@@ -1,9 +1,10 @@
 #pragma once
+#include <fstream>
+#include <string>
+
 #include "Board.h"
 #include "Player.h"
 #include "Types.h"
-#include <fstream>
-#include <string>
 
 class GameEngine {
 private:
@@ -18,7 +19,7 @@ private:
 
 public:
     // Initializes the board, gives 10 walls to each player, sets starting positions
-    GameEngine(); 
+    GameEngine();
 
     // Actions (Called by UI clicks or AI decisions)
     // These functions return false if the move was illegal, true if successful
@@ -36,12 +37,13 @@ public:
     // Returns the reason the last movePawn/placeWall call failed
     std::string getLastError() const { return lastError; }
 
-    //Saving/Loading Feature
+    // Saving/Loading Feature
     bool saveGame(const std::string& filename);
     bool loadGame(const std::string& filename);
 };
 
-inline void GameEngine::switchTurn(){
-    if(currentPlayerTurn == PlayerId::PLAYER_1) currentPlayerTurn = PlayerId::PLAYER_2;
-    else currentPlayerTurn = PlayerId::PLAYER_1;
+inline void GameEngine::switchTurn() {
+    if (currentPlayerTurn == PlayerId::PLAYER_1) currentPlayerTurn = PlayerId::PLAYER_2;
+    else
+        currentPlayerTurn = PlayerId::PLAYER_1;
 }

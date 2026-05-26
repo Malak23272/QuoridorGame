@@ -1,7 +1,8 @@
 #include <QApplication>
 #include <QMetaType>
-#include "UI/GameWindow.h"
+
 #include "Core/Board.h"
+#include "UI/GameWindow.h"
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);

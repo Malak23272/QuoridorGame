@@ -1,17 +1,18 @@
 #include "UI/GameWindow.h"
-#include <QMenuBar>
-#include <QMenu>
+
 #include <QAction>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QComboBox>
-#include <QMessageBox>
 #include <QApplication>
+#include <QComboBox>
+#include <QHBoxLayout>
 #include <QKeySequence>
-#include <QTimer>
-#include <QPushButton>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
 #include <QMetaType>
+#include <QPushButton>
+#include <QTimer>
+#include <QVBoxLayout>
 #include <QtConcurrent/QtConcurrentRun>
 
 Q_DECLARE_METATYPE(Move)
@@ -20,8 +21,7 @@ static const char* SAVE_FILE = "savegame.txt";
 
 // ---- construction ----
 
-GameWindow::GameWindow(QWidget* parent)
-    : QMainWindow(parent) {
+GameWindow::GameWindow(QWidget* parent) : QMainWindow(parent) {
     setupMenuBar();
     setupUI();
     connectSignals();
@@ -36,12 +36,12 @@ void GameWindow::setupMenuBar() {
     QMenuBar* mb = menuBar();
 
     QMenu* gameMenu = mb->addMenu("&Game");
-    gameMenu->addAction("&New Game",  QKeySequence::New,  this, &GameWindow::resetGame);
+    gameMenu->addAction("&New Game", QKeySequence::New, this, &GameWindow::resetGame);
     gameMenu->addSeparator();
     gameMenu->addAction("&Save Game", QKeySequence::Save, this, &GameWindow::saveGame);
     gameMenu->addAction("&Load Game", QKeySequence::Open, this, &GameWindow::loadGame);
     gameMenu->addSeparator();
-    gameMenu->addAction("E&xit",      QKeySequence::Quit, this, &QWidget::close);
+    gameMenu->addAction("E&xit", QKeySequence::Quit, this, &QWidget::close);
 }
 
 // ---- central UI ----
@@ -113,20 +113,15 @@ void GameWindow::setupUI() {
 // ---- signal wiring ----
 
 void GameWindow::connectSignals() {
-    connect(boardWidget, &GameBoardWidget::pawnMoveClicked,
-            this,       &GameWindow::onPawnMoveClicked);
-    connect(boardWidget, &GameBoardWidget::wallPlaceClicked,
-            this,       &GameWindow::onWallPlaceClicked);
-    connect(boardWidget, &GameBoardWidget::invalidAction,
-            this,       &GameWindow::onInvalidAction);
+    connect(boardWidget, &GameBoardWidget::pawnMoveClicked, this, &GameWindow::onPawnMoveClicked);
+    connect(boardWidget, &GameBoardWidget::wallPlaceClicked, this, &GameWindow::onWallPlaceClicked);
+    connect(boardWidget, &GameBoardWidget::invalidAction, this, &GameWindow::onInvalidAction);
 
-    connect(gameModeCombo,   QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,           &GameWindow::onGameModeChanged);
-    connect(difficultyCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,           &GameWindow::onDifficultyChanged);
+    connect(gameModeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &GameWindow::onGameModeChanged);
+    connect(difficultyCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+            &GameWindow::onDifficultyChanged);
 
-    connect(&aiWatcher, &QFutureWatcher<Move>::finished,
-            this,       &GameWindow::onAIFinished);
+    connect(&aiWatcher, &QFutureWatcher<Move>::finished, this, &GameWindow::onAIFinished);
 }
 
 // ---- slots (user actions) ----
@@ -171,9 +166,15 @@ void GameWindow::onGameModeChanged(int index) {
 
 void GameWindow::onDifficultyChanged(int index) {
     switch (index) {
-        case 0:  currentDifficulty = AIDifficulty::EASY;   break;
-        case 1:  currentDifficulty = AIDifficulty::MEDIUM; break;
-        default: currentDifficulty = AIDifficulty::HARD;   break;
+        case 0:
+            currentDifficulty = AIDifficulty::EASY;
+            break;
+        case 1:
+            currentDifficulty = AIDifficulty::MEDIUM;
+            break;
+        default:
+            currentDifficulty = AIDifficulty::HARD;
+            break;
     }
     resetGame();
 }
@@ -248,12 +249,10 @@ void GameWindow::triggerAITurn() {
     int depth = static_cast<int>(currentDifficulty);
     PlayerId id = aiPlayerId;
 
-    aiWatcher.setFuture(QtConcurrent::run(
-        [boardCopy, aiCopy, humanCopy, depth, id]() -> Move {
-            Minimax brain(depth, id);
-            return brain.calculateBestMove(boardCopy, aiCopy, humanCopy);
-        }
-    ));
+    aiWatcher.setFuture(QtConcurrent::run([boardCopy, aiCopy, humanCopy, depth, id]() -> Move {
+        Minimax brain(depth, id);
+        return brain.calculateBestMove(boardCopy, aiCopy, humanCopy);
+    }));
 }
 
 void GameWindow::onAIFinished() {
@@ -283,13 +282,16 @@ void GameWindow::onAIFinished() {
             int y1 = (cy + 3 > 7) ? 7 : cy + 3;
             for (int x = x0; x <= x1 && !success; ++x) {
                 for (int y = y0; y <= y1 && !success; ++y) {
-                    Wall fw; fw.orientation = WallOrientation::HORIZONTAL;
+                    Wall fw;
+                    fw.orientation = WallOrientation::HORIZONTAL;
                     fw.topLeft = {x, y};
-                    if (tempB.isValidWallPlacement(fw) && !tempB.doesWallBlockPath(fw, engine.getPlayer1(), engine.getPlayer2()))
+                    if (tempB.isValidWallPlacement(fw) &&
+                        !tempB.doesWallBlockPath(fw, engine.getPlayer1(), engine.getPlayer2()))
                         success = engine.placeWall(fw);
                     if (!success) {
                         fw.orientation = WallOrientation::VERTICAL;
-                        if (tempB.isValidWallPlacement(fw) && !tempB.doesWallBlockPath(fw, engine.getPlayer1(), engine.getPlayer2()))
+                        if (tempB.isValidWallPlacement(fw) &&
+                            !tempB.doesWallBlockPath(fw, engine.getPlayer1(), engine.getPlayer2()))
                             success = engine.placeWall(fw);
                     }
                 }
@@ -300,13 +302,11 @@ void GameWindow::onAIFinished() {
             Position p = ai.getPosition();
             int dy = (ai.getGoalRow() == 0) ? -1 : 1;
             Position fwd{p.x, p.y + dy};
-            if (engine.getBoard().isValidPawnMove(p, fwd, human.getPosition()))
-                success = engine.movePawn(fwd);
+            if (engine.getBoard().isValidPawnMove(p, fwd, human.getPosition())) success = engine.movePawn(fwd);
             for (int dx : {-1, 1}) {
                 if (success) break;
                 Position side{p.x + dx, p.y};
-                if (engine.getBoard().isValidPawnMove(p, side, human.getPosition()))
-                    success = engine.movePawn(side);
+                if (engine.getBoard().isValidPawnMove(p, side, human.getPosition())) success = engine.movePawn(side);
             }
         }
     }
@@ -347,9 +347,7 @@ void GameWindow::showWinnerPopup(PlayerId winner) {
 
 void GameWindow::setNotification(const QString& msg, bool isError) {
     notificationLabel->setText(msg);
-    notificationLabel->setStyleSheet(
-        isError ? "color: red; font-weight: bold;"
-                : "color: green; font-weight: bold;");
+    notificationLabel->setStyleSheet(isError ? "color: red; font-weight: bold;" : "color: green; font-weight: bold;");
     if (!msg.isEmpty()) {
         QTimer::singleShot(3000, this, [this]() {
             if (notificationLabel->text() == "AI is thinking...") return;

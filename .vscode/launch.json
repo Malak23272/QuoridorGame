@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/LENOVO/Documents/QuoridorGame/QuoridorGame/src/AI",
+      "program": "c:/Users/LENOVO/Documents/QuoridorGame/QuoridorGame/src/AI/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "visualizerFile": "c:\\Users\\LENOVO\\AppData\\Roaming\\Code\\User\\workspaceStorage\\972261bcec3912a7ff7b6e4d54734dd5\\tonka3000.qtvsctools\\qt.natvis.xml"
+    }
+  ]
+}

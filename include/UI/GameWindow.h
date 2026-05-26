@@ -1,15 +1,16 @@
 #pragma once
-#include <QMainWindow>
-#include <QLabel>
 #include <QComboBox>
 #include <QFutureWatcher>
+#include <QLabel>
+#include <QMainWindow>
 #include <memory>
-#include "../Core/GameEngine.h"
-#include "../Core/Types.h"
-#include "../Core/Player.h"
-#include "../Core/Board.h"
+
 #include "../AI/AIPlayer.h"
 #include "../AI/Minmax.h"
+#include "../Core/Board.h"
+#include "../Core/GameEngine.h"
+#include "../Core/Player.h"
+#include "../Core/Types.h"
 #include "GameBoardWidget.h"
 
 class GameWindow : public QMainWindow {
@@ -39,11 +40,11 @@ private:
 
     // --- widgets ---
     GameBoardWidget* boardWidget = nullptr;
-    QLabel* turnLabel       = nullptr;
-    QLabel* p1WallsLabel    = nullptr;
-    QLabel* p2WallsLabel    = nullptr;
+    QLabel* turnLabel = nullptr;
+    QLabel* p1WallsLabel = nullptr;
+    QLabel* p2WallsLabel = nullptr;
     QLabel* notificationLabel = nullptr;
-    QComboBox* gameModeCombo   = nullptr;
+    QComboBox* gameModeCombo = nullptr;
     QComboBox* difficultyCombo = nullptr;
 
     // --- async AI ---

@@ -2,18 +2,30 @@
 #include <cassert>
 #include <cstdio>
 #include <string>
+
+#include "../include/AI/AIPlayer.h"
+#include "../include/AI/Minmax.h"
 #include "../include/Core/Board.h"
 #include "../include/Core/GameEngine.h"
-#include "../include/AI/Minmax.h"
-#include "../include/AI/AIPlayer.h"
 #include "../include/Core/Player.h"
 
 static int tests_run = 0;
 static int tests_passed = 0;
 
-#define TEST(name) do { std::printf("  TEST: %s ... ", name); tests_run++; } while(0)
-#define PASS() do { std::printf("PASS\n"); tests_passed++; } while(0)
-#define FAIL(msg) do { std::printf("FAIL: %s\n", msg); } while(0)
+#define TEST(name)                            \
+    do {                                      \
+        std::printf("  TEST: %s ... ", name); \
+        tests_run++;                          \
+    } while (0)
+#define PASS()                 \
+    do {                       \
+        std::printf("PASS\n"); \
+        tests_passed++;        \
+    } while (0)
+#define FAIL(msg)                       \
+    do {                                \
+        std::printf("FAIL: %s\n", msg); \
+    } while (0)
 
 static void test_initial_state() {
     GameEngine engine;
@@ -73,7 +85,7 @@ static void test_wall_placement_invalid() {
     w.topLeft = {0, 0};
     assert(engine.placeWall(w));
     w.topLeft = {0, 0};
-    assert(!engine.placeWall(w)); // should be P2's turn now
+    assert(!engine.placeWall(w));  // should be P2's turn now
 }
 
 static void test_save_load() {
@@ -81,16 +93,18 @@ static void test_save_load() {
     GameEngine engine;
     engine.movePawn({4, 7});  // P1
     engine.movePawn({4, 1});  // P2
-    Wall w; w.topLeft = {2, 3}; w.orientation = WallOrientation::HORIZONTAL;
+    Wall w;
+    w.topLeft = {2, 3};
+    w.orientation = WallOrientation::HORIZONTAL;
     engine.placeWall(w);  // P1
-    
+
     std::string savefile = "save_test.txt";
     assert(engine.saveGame(savefile));
-    
+
     // Load into fresh engine
     GameEngine loaded;
     assert(loaded.loadGame(savefile));
-    
+
     // Verify identical state
     assert(loaded.getCurrentTurn() == engine.getCurrentTurn());
     assert(loaded.getPlayer1().getPosition().x == engine.getPlayer1().getPosition().x);
@@ -100,7 +114,7 @@ static void test_save_load() {
     assert(loaded.getPlayer2().getPosition().y == engine.getPlayer2().getPosition().y);
     assert(loaded.getPlayer2().getWallsRemaining() == engine.getPlayer2().getWallsRemaining());
     assert(loaded.getBoard().getWalls().size() == engine.getBoard().getWalls().size());
-    
+
     // Clean up
     std::remove(savefile.c_str());
 }
@@ -127,9 +141,9 @@ static void test_ai_easy_makes_valid_move() {
     Board board;
     Player aiPlayer(PlayerId::PLAYER_2);
     Player opponent(PlayerId::PLAYER_1);
-    
+
     Move best = brain.calculateBestMove(board, aiPlayer, opponent);
-    
+
     // AI should return SOME move
     assert(best.isWallPlacement || best.pawnMove.x >= 0);
 }
@@ -213,11 +227,13 @@ static void test_ai_plays_several_turns_without_deadlock() {
                 }
                 // If truly stuck, place a wall
                 if (!moved && engine.getPlayer1().getWallsRemaining() > 0) {
-                    Wall w; w.orientation = WallOrientation::HORIZONTAL;
-                    for (int x = 0; x < 7 && !moved; ++x) for (int y = 0; y < 7 && !moved; ++y) {
-                        w.topLeft = {x, y};
-                        if (engine.placeWall(w)) moved = true;
-                    }
+                    Wall w;
+                    w.orientation = WallOrientation::HORIZONTAL;
+                    for (int x = 0; x < 7 && !moved; ++x)
+                        for (int y = 0; y < 7 && !moved; ++y) {
+                            w.topLeft = {x, y};
+                            if (engine.placeWall(w)) moved = true;
+                        }
                 }
                 assert(moved && "P1 must have a legal move");
             }
@@ -267,11 +283,13 @@ static void test_ai_plays_several_turns_medium() {
                 }
                 // If truly stuck, place a wall
                 if (!moved && engine.getPlayer1().getWallsRemaining() > 0) {
-                    Wall w; w.orientation = WallOrientation::HORIZONTAL;
-                    for (int x = 0; x < 7 && !moved; ++x) for (int y = 0; y < 7 && !moved; ++y) {
-                        w.topLeft = {x, y};
-                        if (engine.placeWall(w)) moved = true;
-                    }
+                    Wall w;
+                    w.orientation = WallOrientation::HORIZONTAL;
+                    for (int x = 0; x < 7 && !moved; ++x)
+                        for (int y = 0; y < 7 && !moved; ++y) {
+                            w.topLeft = {x, y};
+                            if (engine.placeWall(w)) moved = true;
+                        }
                 }
                 assert(moved && "P1 must have a legal move");
             }
@@ -295,8 +313,8 @@ static void test_diagnose_ai_start_move() {
         opp.setPosition({4, 7});
         Minimax brain(2, PlayerId::PLAYER_2);
         Move best = brain.calculateBestMove(board, ai, opp);
-        std::printf("  [P2 AI, after P1 forward]: pawnMove=(%d,%d), isWall=%d\n",
-            best.pawnMove.x, best.pawnMove.y, best.isWallPlacement);
+        std::printf("  [P2 AI, after P1 forward]: pawnMove=(%d,%d), isWall=%d\n", best.pawnMove.x, best.pawnMove.y,
+                    best.isWallPlacement);
     }
 
     // Scenario 2: AI=P1 (goes FIRST), P2 hasn't moved yet, AI at (4,8)
@@ -305,8 +323,8 @@ static void test_diagnose_ai_start_move() {
         Player opp(PlayerId::PLAYER_2);
         Minimax brain(2, PlayerId::PLAYER_1);
         Move best = brain.calculateBestMove(board, ai, opp);
-        std::printf("  [P1 AI, first turn]:       pawnMove=(%d,%d), isWall=%d\n",
-            best.pawnMove.x, best.pawnMove.y, best.isWallPlacement);
+        std::printf("  [P1 AI, first turn]:       pawnMove=(%d,%d), isWall=%d\n", best.pawnMove.x, best.pawnMove.y,
+                    best.isWallPlacement);
     }
 
     // Scenario 3: AI=P2, P1 placed a wall instead of moving (still at (4,8))
@@ -314,24 +332,24 @@ static void test_diagnose_ai_start_move() {
         Player ai(PlayerId::PLAYER_2);
         Player opp(PlayerId::PLAYER_1);
         // P1 used a wall, still at (4,8)
-        opp.useWall(); // 9 walls left
+        opp.useWall();  // 9 walls left
         Board b2;
         Minimax brain(2, PlayerId::PLAYER_2);
         Move best = brain.calculateBestMove(b2, ai, opp);
-        std::printf("  [P2 AI, after P1 wall]:    pawnMove=(%d,%d), isWall=%d\n",
-            best.pawnMove.x, best.pawnMove.y, best.isWallPlacement);
+        std::printf("  [P2 AI, after P1 wall]:    pawnMove=(%d,%d), isWall=%d\n", best.pawnMove.x, best.pawnMove.y,
+                    best.isWallPlacement);
     }
 
     // Scenario 4: AI=P2, both have moved forward several steps
     {
         Player ai(PlayerId::PLAYER_2);
         Player opp(PlayerId::PLAYER_1);
-        ai.setPosition({4, 3});  // AI has advanced
-        opp.setPosition({4, 5}); // Opponent has advanced
+        ai.setPosition({4, 3});   // AI has advanced
+        opp.setPosition({4, 5});  // Opponent has advanced
         Minimax brain(2, PlayerId::PLAYER_2);
         Move best = brain.calculateBestMove(board, ai, opp);
-        std::printf("  [P2 AI, mid-board]:        pawnMove=(%d,%d), isWall=%d\n",
-            best.pawnMove.x, best.pawnMove.y, best.isWallPlacement);
+        std::printf("  [P2 AI, mid-board]:        pawnMove=(%d,%d), isWall=%d\n", best.pawnMove.x, best.pawnMove.y,
+                    best.isWallPlacement);
     }
 
     // Scenario 5: AI=P2, both at (4,6) and (4,2) — AI closer to opponent
@@ -342,30 +360,60 @@ static void test_diagnose_ai_start_move() {
         opp.setPosition({4, 6});
         Minimax brain(2, PlayerId::PLAYER_2);
         Move best = brain.calculateBestMove(board, ai, opp);
-        std::printf("  [P2 AI, close to opp]:     pawnMove=(%d,%d), isWall=%d\n",
-            best.pawnMove.x, best.pawnMove.y, best.isWallPlacement);
+        std::printf("  [P2 AI, close to opp]:     pawnMove=(%d,%d), isWall=%d\n", best.pawnMove.x, best.pawnMove.y,
+                    best.isWallPlacement);
     }
 }
 
 int main() {
     std::printf("Core game logic tests:\n");
-    
-    TEST("initial state");          test_initial_state();           PASS();
-    TEST("pawn move basic");        test_pawn_move_basic();         PASS();
-    TEST("pawn move invalid");      test_pawn_move_invalid();       PASS();
-    TEST("wall placement");         test_wall_placement();          PASS();
-    TEST("wall placement invalid"); test_wall_placement_invalid();  PASS();
-    TEST("save and load");          test_save_load();               PASS();
-    TEST("pawn jump");              test_pawn_jump();               PASS();
-    TEST("AI easy valid move");     test_ai_easy_makes_valid_move();PASS();
-    TEST("invalid no move");        test_move_invalid_no_move();    PASS();
-    TEST("blocked jump");           test_blocked_jump();            PASS();
-    TEST("winner detection");       test_winner();                  PASS();
-    TEST("AI plays turns");         test_ai_plays_several_turns_without_deadlock(); PASS();
-    TEST("AI medium valid move");   test_ai_medium_makes_valid_move(); PASS();
-    TEST("AI medium plays turns");  test_ai_plays_several_turns_medium(); PASS();
-    TEST("AI start move diag");     test_diagnose_ai_start_move();       PASS();
-    
+
+    TEST("initial state");
+    test_initial_state();
+    PASS();
+    TEST("pawn move basic");
+    test_pawn_move_basic();
+    PASS();
+    TEST("pawn move invalid");
+    test_pawn_move_invalid();
+    PASS();
+    TEST("wall placement");
+    test_wall_placement();
+    PASS();
+    TEST("wall placement invalid");
+    test_wall_placement_invalid();
+    PASS();
+    TEST("save and load");
+    test_save_load();
+    PASS();
+    TEST("pawn jump");
+    test_pawn_jump();
+    PASS();
+    TEST("AI easy valid move");
+    test_ai_easy_makes_valid_move();
+    PASS();
+    TEST("invalid no move");
+    test_move_invalid_no_move();
+    PASS();
+    TEST("blocked jump");
+    test_blocked_jump();
+    PASS();
+    TEST("winner detection");
+    test_winner();
+    PASS();
+    TEST("AI plays turns");
+    test_ai_plays_several_turns_without_deadlock();
+    PASS();
+    TEST("AI medium valid move");
+    test_ai_medium_makes_valid_move();
+    PASS();
+    TEST("AI medium plays turns");
+    test_ai_plays_several_turns_medium();
+    PASS();
+    TEST("AI start move diag");
+    test_diagnose_ai_start_move();
+    PASS();
+
     std::printf("\n%d / %d tests passed.\n", tests_passed, tests_run);
     return (tests_passed == tests_run) ? 0 : 1;
 }

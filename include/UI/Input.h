@@ -7,10 +7,10 @@ class Input {
 private:
     int windowWidth = 0;
     int windowHeight = 0;
-    int boardPixelSize = 0; // Total pixel size of the drawing board
-    int cellSize = 0;       // Pixel size of a single cell
-    int wallGapSize = 0;    // Pixel size of the gap between cells where walls go
-    int margin = 0;         // Offset from widget edge to board start
+    int boardPixelSize = 0;  // Total pixel size of the drawing board
+    int cellSize = 0;        // Pixel size of a single cell
+    int wallGapSize = 0;     // Pixel size of the gap between cells where walls go
+    int margin = 0;          // Offset from widget edge to board start
 
     void recalculate();
 

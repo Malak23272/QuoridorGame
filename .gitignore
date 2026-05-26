@@ -16,7 +16,6 @@ mocs_compilation.cpp
 *_autogen/
 
 IDE / editor
-.vscode/
 .qt/
 *.user
 *.suo

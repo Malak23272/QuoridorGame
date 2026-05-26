@@ -1,12 +1,13 @@
 #pragma once
-#include <QWidget>
-#include <QPainter>
 #include <QMouseEvent>
-#include <vector>
+#include <QPainter>
+#include <QWidget>
 #include <optional>
-#include "Input.h"
+#include <vector>
+
 #include "../Core/GameEngine.h"
 #include "../Core/Types.h"
+#include "Input.h"
 
 class GameBoardWidget : public QWidget {
     Q_OBJECT
