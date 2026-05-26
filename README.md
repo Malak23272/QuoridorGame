@@ -20,21 +20,11 @@ The first player to reach any square on the opponent's starting row wins.
 
 ## Screenshots
 
-*Screenshots go here — replace with actual images:*
-
-```
-![Gameplay](screenshots/gameplay.png)
-![Start Screen](screenshots/start.png)
-![AI Playing](screenshots/ai.png)
-```
+*Drag & drop screenshots here in the GitHub web editor.*
 
 ## Demo Video
 
-*Demo video link goes here:*
-
-```
 [Watch the demo](https://youtu.be/your-video-id)
-```
 
 ## Controls
 
