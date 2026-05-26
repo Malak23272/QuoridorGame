@@ -21,6 +21,9 @@ IDE / editor
 *.user
 *.suo
 
+Project style
+.clang-format
+
 CMake cache
 CMakeCache.txt
 CMakeFiles/
