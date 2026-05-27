@@ -20,7 +20,15 @@ The first player to reach any square on the opponent's starting row wins.
 
 ## Screenshots
 
-*Drag & drop screenshots here in the GitHub web editor.*
+<img width="1343" height="1096" alt="Screenshot 2026-05-27 052120" src="https://github.com/user-attachments/assets/2c667227-fc64-4502-b24f-5956a5e0e7ae" />
+-Case Of Diagonal Movements Validation
+<img width="741" height="332" alt="Screenshot 2026-05-26 011900" src="https://github.com/user-attachments/assets/f57c8c43-d63b-47eb-b561-2768cf639a44" />
+-Case Of Jump Movement Validation
+<img width="969" height="614" alt="Screenshot 2026-05-26 011457" src="https://github.com/user-attachments/assets/77051fac-89f3-41fb-af25-853a0ebf4c24" />
+
+
+
+
 
 ## Demo Video
 
