@@ -53,8 +53,8 @@ inline int Minimax::evaluateBoardState(Board& board, Player& aiPlayer, Player& o
     if (aiPlayer.getPosition().y == aiPlayer.getGoalRow()) return 1000000;
 
     // 2. The Distances
-    int aiDist = board.getShortestPath(aiPlayer);
-    int oppDist = board.getShortestPath(opponent);
+   int aiDist = board.getShortestPath(aiPlayer, opponent.getPosition());
+int oppDist = board.getShortestPath(opponent, aiPlayer.getPosition());
     
     // ---------------------------------------------------------
     // THE FIX: Self-Preservation Weighting
@@ -82,7 +82,7 @@ inline int Minimax::evaluateBoardState(Board& board, Player& aiPlayer, Player& o
         // A loss at Depth 3 (-999997) is mathematically better than a loss at Depth 1 (-999999). 
         // This forces the AI to place blocking walls to delay its death!
         if (score <= -900000) return score + depth; 
-        if (score >= 900000) return score - depth;
+        if (score >= 900000) return score + depth;
         
         return score;
     }

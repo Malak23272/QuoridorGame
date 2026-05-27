@@ -245,7 +245,7 @@ void GameWindow::triggerAITurn() {
     // Copy state for worker thread (Minimax works on copies internally)
     Board boardCopy = engine.getBoard();
     Player aiCopy = (aiPlayerId == PlayerId::PLAYER_1) ? engine.getPlayer1() : engine.getPlayer2();
-    Player humanCopy = (aiPlayerId == PlayerId::PLAYER_2) ? engine.getPlayer2() : engine.getPlayer1();
+ Player humanCopy = (aiPlayerId == PlayerId::PLAYER_2) ? engine.getPlayer1() : engine.getPlayer2();
     int depth = static_cast<int>(currentDifficulty);
     PlayerId id = aiPlayerId;
 
@@ -270,7 +270,7 @@ void GameWindow::onAIFinished() {
     // Fallback if minimax returned an invalid move (extremely rare)
     if (!success) {
         const Player& ai = (aiPlayerId == PlayerId::PLAYER_1) ? engine.getPlayer1() : engine.getPlayer2();
-        const Player& human = (aiPlayerId == PlayerId::PLAYER_2) ? engine.getPlayer2() : engine.getPlayer1();
+        const Player& human = (aiPlayerId == PlayerId::PLAYER_2) ? engine.getPlayer1() : engine.getPlayer2();
         // Try walls near the midpoint between players (defensive, not from (0,0))
         if (ai.getWallsRemaining() > 0) {
             Board tempB = engine.getBoard();

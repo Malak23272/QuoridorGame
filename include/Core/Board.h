@@ -119,8 +119,7 @@ public:
     void placeWall(Wall wall);
 
     // to get the shortest path for the player
-    int getShortestPath(Player& player);
-
+ int getShortestPath(Player& player, Position blockedCell);
     // Getters for the UI (to draw them) and AI (to evaluate the board)
     const std::vector<Wall>& getWalls() const;
     int getSize() const { return BOARD_SIZE; }

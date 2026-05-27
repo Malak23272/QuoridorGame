@@ -113,7 +113,7 @@ const std::vector<Wall>& Board::getWalls() const {
     return placedWalls;
 }
 
-int Board::getShortestPath(Player& player) {
+int Board::getShortestPath(Player& player,Position blockedCell) {
     int distance[9][9];
     queue<Position> positions;
 
@@ -140,7 +140,7 @@ int Board::getShortestPath(Player& player) {
             p.y = pos.y + dy[i];
 
             if (p.x >= 0 && p.x < 9 && p.y < 9 && p.y >= 0) {
-                if (distance[p.x][p.y] == -1 && !isEdgeBlocked(pos, p)) {
+                if (distance[p.x][p.y] == -1 && !isEdgeBlocked(pos, p) && !(p == blockedCell)) {
                     positions.push(p);
 
                     distance[p.x][p.y] = distance[pos.x][pos.y] + 1;  // to increment the distance
