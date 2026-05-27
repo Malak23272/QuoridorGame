@@ -24,7 +24,7 @@ The first player to reach any square on the opponent's starting row wins.
 
 ## Demo Video
 
-[Watch the demo](https://youtu.be/your-video-id)
+[Watch the demo](https://drive.google.com/drive/folders/15ZWarVCDxSHMkG_zPyY2KR6DhMKPIjPN)
 
 ## Controls
 
