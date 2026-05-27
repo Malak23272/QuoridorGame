@@ -7,7 +7,7 @@
 enum class AIDifficulty {
     EASY = 1,    // Looks 1 move ahead (mostly greedy)
     MEDIUM = 2,  // Looks 2 moves ahead
-    HARD = 4     // Looks 3-4 moves ahead (Requires highly optimized code!)
+    HARD = 3     // Looks 3-4 moves ahead (Requires highly optimized code!)
 };
 
 class AIPlayer {

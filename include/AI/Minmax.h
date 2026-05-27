@@ -2,6 +2,7 @@
 #pragma once
 #include "../Core/Board.h"
 #include "../Core/Player.h"
+#include <algorithm>
 #include <vector>
 
 class AIPlayer;
@@ -142,49 +143,62 @@ int oppDist = board.getShortestPath(opponent, aiPlayer.getPosition());
                             }}
 
 
-   inline std::vector<Move> Minimax:: generateAllLegalMoves(Board& board, const Player& activePlayer,const Player &opponnentPlayer) const{
-       std::vector<Move>legalmoves;
-       //pawns moves
-    for(int dx=-2;dx<=2;++dx){
-        for(int dy=-2;dy<=2;++dy){
-        Position p;
-        p.x=activePlayer.getPosition().x+dx;
-        p.y=activePlayer.getPosition().y+dy;
-        if(board.isValidPawnMove(activePlayer.getPosition(),p,opponnentPlayer.getPosition())){
-           legalmoves.push_back({false, p, Wall(), 0});
-        }
+   inline std::vector<Move> Minimax::generateAllLegalMoves(Board& board, const Player& activePlayer, const Player &opponnentPlayer) const {
+    std::vector<Move> legalmoves;
+
+    int goalDir = (activePlayer.getGoalRow() == 0) ? -1 : 1;
+    int px = activePlayer.getPosition().x;
+    int py = activePlayer.getPosition().y;
+
+    for (int dx = -2; dx <= 2; ++dx) {
+        for (int dy = -2; dy <= 2; ++dy) {
+            Position p;
+            p.x = px + dx;
+            p.y = py + dy;
+            if (board.isValidPawnMove(activePlayer.getPosition(), p, opponnentPlayer.getPosition())) {
+                int score = dy * goalDir;
+                legalmoves.push_back({false, p, Wall(), score});
+            }
         }
     }
-    //walls moves
-    if(activePlayer.getWallsRemaining()>0){
-    for(int x=0;x<=7;++x){
-      for(int y=0;y<=7;++y){
-        // THE SPEED HACK: Calculate Manhattan distance from the wall to both players
-                int distToActive = std::abs(activePlayer.getPosition().x - x) + std::abs(activePlayer.getPosition().y - y);
-                int distToOpp = std::abs(opponnentPlayer.getPosition().x - x) + std::abs(opponnentPlayer.getPosition().y - y);
 
-                // If the wall is far away from everyone, SKIP IT entirely!
-                if (distToActive > 3 && distToOpp > 3) {
-                    continue; 
+    if (activePlayer.getWallsRemaining() > 0) {
+        int ox = opponnentPlayer.getPosition().x;
+        int oy = opponnentPlayer.getPosition().y;
+        for (int x = 0; x <= 7; ++x) {
+            for (int y = 0; y <= 7; ++y) {
+                int distToActive = std::abs(px - x) + std::abs(py - y);
+                int distToOpp = std::abs(ox - x) + std::abs(oy - y);
+                if (distToActive > 3 && distToOpp > 3) continue;
+
+                Wall hwall;
+                hwall.orientation = WallOrientation::HORIZONTAL;
+                hwall.topLeft.x = x;
+                hwall.topLeft.y = y;
+                if (board.isValidWallPlacement(hwall) && !board.doesWallBlockPath(hwall, activePlayer, opponnentPlayer)) {
+                    int score = distToActive - distToOpp;
+                    legalmoves.push_back({true, Position(), hwall, score});
                 }
 
-    Wall hwall;
-    hwall.orientation=WallOrientation::HORIZONTAL;
-    hwall.topLeft.x=x;
-    hwall.topLeft.y=y;
-    if(board.isValidWallPlacement(hwall)&&!board.doesWallBlockPath(hwall,activePlayer,opponnentPlayer)){
-      legalmoves.push_back({true, Position(), hwall, 0});
+                Wall vwall;
+                vwall.orientation = WallOrientation::VERTICAL;
+                vwall.topLeft.x = x;
+                vwall.topLeft.y = y;
+                if (board.isValidWallPlacement(vwall) && !board.doesWallBlockPath(vwall, activePlayer, opponnentPlayer)) {
+                    int score = distToActive - distToOpp;
+                    legalmoves.push_back({true, Position(), vwall, score});
+                }
+            }
+        }
     }
-    Wall Vwall;
-    Vwall.orientation=WallOrientation::VERTICAL;
-    Vwall.topLeft.x=x;
-    Vwall.topLeft.y=y;
-    if(board.isValidWallPlacement(Vwall)&&!board.doesWallBlockPath(Vwall,activePlayer,opponnentPlayer)){
-       legalmoves.push_back({true, Position(), Vwall, 0});
-    }}
 
-      }}
-      return legalmoves;
+    std::sort(legalmoves.begin(), legalmoves.end(), [](const Move& a, const Move& b) {
+        int rankA = a.isWallPlacement ? (a.evaluationScore - 100) : (a.evaluationScore + 100);
+        int rankB = b.isWallPlacement ? (b.evaluationScore - 100) : (b.evaluationScore + 100);
+        return rankA > rankB;
+    });
+
+    return legalmoves;
     }
 
 
